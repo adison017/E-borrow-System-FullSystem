@@ -1,0 +1,69 @@
+services:
+
+  # MySQL Database (using host database)
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: eborrow-mysql
+  #   restart: unless-stopped
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #     - MYSQL_DATABASE=${MYSQL_DATABASE}
+  #     - MYSQL_USER=${MYSQL_USER}
+  #     - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - eborrow-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./E-borrow-System_Backend
+      dockerfile: Dockerfile
+    container_name: eborrow-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=nozomi.proxy.rlwy.net
+      - DB_USER=root
+      - DB_PASS=hCEINvpUrYQgGWnyiBcVfWzHlvsZvWCJ
+      - DB_NAME=e-borrow
+      - DB_PORT=57655
+      - JWT_SECRET=supersecretkey9658742365
+      - CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+      - CLOUDINARY_API_KEY=your_cloudinary_api_key
+      - CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+      - LINE_NOTIFY_TOKEN=TKKVEldZlp0g6oJheUY8hb6MHebiJ58wz++LAL4rRf36AVt5FjQT0TgTQVxZQDqIEkXxsSs96b1il+uT1CV7x5/witXk9TWbRmc4XFPPWOSL0YVei4V0lMeDyVxeIEJL7G4oelrjA8Z1YlkXsRAL7AdB04t89/1O/w1cDnyilFU=
+      - EMAIL_USER=e.borrow.it@gmail.com
+      - EMAIL_PASS=empo dlkq ykbv jpyq
+      - FRONTEND_URLS=http://localhost:5173,http://frontend:5173
+    volumes:
+      - ./E-borrow-System_Backend/uploads:/app/uploads
+    networks:
+      - eborrow-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./E-borrow-System_Frontend-
+      dockerfile: Dockerfile
+    container_name: eborrow-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+      - REACT_APP_SOCKET_URL=http://localhost:5000
+    networks:
+      - eborrow-network
+
+volumes:
+  mysql_data:
+
+networks:
+  eborrow-network:
+    driver: bridge
